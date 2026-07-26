@@ -1,0 +1,71 @@
+@model List<LibraryMvc.Models.BookResponse>
+
+<div class="grid md:grid-cols-3 gap-6 px-2">
+
+    @foreach (var book in Model)
+    {
+        <div class="bg-white rounded-2xl shadow-lg p-6
+            hover:shadow-2xl hover:-translate-y-1
+            transition duration-300">
+
+            <h3 class="text-xl font-bold mb-2">
+                @book.Title
+            </h3>
+
+            <p class="text-gray-500 mb-4">
+                @book.Author
+            </p>
+
+            @if (book.IsBorrowed)
+            {
+                <span class="bg-red-100 text-red-700
+                    px-3 py-1 rounded-full text-sm">
+                    Borrowed
+                </span>
+            }
+            else
+            {
+                <span class="bg-green-100 text-green-700
+                    px-3 py-1 rounded-full text-sm">
+                    Available
+                </span>
+            }
+
+            <div class="mt-6 flex gap-2">
+
+             
+                <a asp-action="Edit" asp-route-id="@book.Id" class="bg-blue-500 text-white
+                    px-4 py-2 rounded-lg
+                    hover:bg-blue-600">
+                    Edit
+                </a>
+
+                @if (book.IsBorrowed)
+                {
+                    <form asp-action="Return" method="post" onsubmit="return confirm('Return this book ?');">
+                        <input type="hidden" name="returnBookId" value="@book.Id" />
+                        <button type="submit" class="bg-blue-500 text-white
+                        px-4 py-2 rounded-lg
+                        hover:bg-blue-600"> Return</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Borrow" method="post" onsubmit="return confirm('Borrow this book ?');">
+                        <input type="hidden" name="borrowBookId" value="@book.Id" />
+                        <button type="submit" class="bg-blue-500 text-white
+                        px-4 py-2 rounded-lg
+                        hover:bg-blue-600"> Borrow</button>
+                    </form>
+                }
+
+                <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this book ?');">
+                    <input type="hidden" name="borrowBookId" value="@book.Id" />
+                    <button type="submit" class="bg-red-500 text-white
+                    px-4 py-2 rounded-lg
+                    hover:bg-red-600"> Delete</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

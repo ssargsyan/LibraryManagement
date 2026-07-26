@@ -1,0 +1,45 @@
+﻿@model LibraryMvc.Models.HomeViewModel
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 mx-2">
+
+
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-gray-500 text-sm">
+            Authors
+        </h3>
+
+        <p class="text-4xl font-bold mt-2">
+            @Model.TotalAuthors
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-gray-500 text-sm">
+            Total Books
+        </h3>
+
+        <p class="text-4xl font-bold mt-2">
+            @Model.TotalBooks
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-gray-500 text-sm">
+            Available
+        </h3>
+
+        <p class="text-4xl font-bold mt-2">
+            @Model.TotalAvailableBooks
+        </p>
+    </div>
+    <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-gray-500 text-sm">
+            Borrowed
+        </h3>
+
+        <p class="text-4xl font-bold mt-2">
+            @Model.TotalBorrowedBooks
+        </p>
+    </div>
+
+</div>

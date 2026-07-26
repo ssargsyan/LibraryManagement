@@ -1,0 +1,10 @@
+@model LibraryMvc.Models.BookFormViewModel
+
+@{
+    ViewData["Title"] = "Update book information";
+    ViewData["FormAction"] = "Edit";
+    ViewData["ButtonText"] = "✏️ Update Book";
+    ViewData["PageTitle"] = "✏️ Edit Book";
+}
+
+<partial name="_BookForm" model="Model" />

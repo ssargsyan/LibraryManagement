@@ -1,0 +1,39 @@
+@model List<LibraryMvc.Models.AuthorsResponse>
+
+<div class="grid md:grid-cols-3 gap-6">
+
+    @foreach (var author in Model)
+    {
+        <div class="bg-white rounded-2xl shadow-lg p-6
+            hover:shadow-2xl hover:-translate-y-1
+            transition duration-300">
+
+            <h3 class="text-xl font-bold mb-2">
+                @author.Name
+            </h3>
+
+            <div class="mb-4">
+                <p class="text-gray-500 mr-4">
+                    Total books
+                </p>
+                <p class="text-gray-500 ">
+                    @author.BooksCount
+                </p>
+            </div>
+            <div class="mt-6 flex gap-2">
+                <button asp-action="" asp-route-id="@author.Id" class="bg-blue-500 text-white
+                    px-4 py-2 rounded-lg
+                    hover:bg-blue-600">
+                    Edit
+                </button>       
+                <form asp-action="" method="post" onsubmit="return confirm('Delete this author ?');">
+                    <input type="hidden" name="borrowBookId" value="@author.Id" />
+                    <button type="submit" class="bg-red-500 text-white
+                    px-4 py-2 rounded-lg
+                    hover:bg-red-600"> Delete</button>
+                </form>
+            </div>
+        </div>
+    }
+
+</div>
