@@ -87,7 +87,7 @@ public class LibraryController : ControllerBase
     {
         int bookId = request.Id;
         _libraryBooksService.Borrow(bookId);
-        return Ok("Book is borrowd successfully");
+        return Ok("Book is borrowed successfully");
     }
 
     [HttpPost("returnBook")]

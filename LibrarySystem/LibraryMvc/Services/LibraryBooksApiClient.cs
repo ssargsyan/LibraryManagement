@@ -22,7 +22,7 @@ public class LibraryBooksApiClient
     public async Task<List<BookResponse>> GetBooksAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/books");
+            "api/library/books");
 
         response.EnsureSuccessStatusCode();
 
@@ -38,7 +38,7 @@ public class LibraryBooksApiClient
     public async Task<int> GetBooksCountAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/booksCount");
+            "api/library/booksCount");
 
         response.EnsureSuccessStatusCode();
 
@@ -50,7 +50,7 @@ public class LibraryBooksApiClient
     public async Task<int> GetBorrowedBooksCountAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/booksCount?isBorrowed=true");
+            "api/library/booksCount?isBorrowed=true");
 
         response.EnsureSuccessStatusCode();
 
@@ -62,7 +62,7 @@ public class LibraryBooksApiClient
     public async Task<int> GetAvailableBooksCountAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/booksCount?isBorrowed=false");
+            "api/library/booksCount?isBorrowed=false");
 
         response.EnsureSuccessStatusCode();
 
@@ -74,7 +74,7 @@ public class LibraryBooksApiClient
     public async Task<BookResponse> GetBookAsync(int bookId)
     {
         var response = await _httpClient.GetAsync(
-            $"http://localhost:5295/api/library/books/{bookId}");
+            $"api/library/books/{bookId}");
 
         response.EnsureSuccessStatusCode();
 
@@ -93,7 +93,7 @@ public class LibraryBooksApiClient
     {
 
         var response = await _httpClient.DeleteAsync(
-            $"http://localhost:5295/api/library/{bookId}");
+            $"api/library/books/{bookId}");
 
         response.EnsureSuccessStatusCode();
     }
@@ -114,13 +114,11 @@ public class LibraryBooksApiClient
         var requestUrl = "";
         if (isBorrowed)
         {
-            Console.WriteLine("borrow book ============================");
-            requestUrl = "http://localhost:5295/api/library/borrowBook";
+            requestUrl = "api/library/borrowBook";
         }
         else
         {
-            Console.WriteLine("return book ============================");
-            requestUrl = "http://localhost:5295/api/library/returnBook";
+            requestUrl = "api/library/returnBook";
         }
         var response = await _httpClient.PostAsync(requestUrl, content);
         response.EnsureSuccessStatusCode();
@@ -136,7 +134,7 @@ public class LibraryBooksApiClient
             Encoding.UTF8,
             "application/json");
 
-        var response = await _httpClient.PostAsync("http://localhost:5295/api/library/addBook", content);
+        var response = await _httpClient.PostAsync("api/library/addBook", content);
         response.EnsureSuccessStatusCode();
         var responseJson = await response.Content.ReadAsStringAsync();
 
@@ -159,7 +157,7 @@ public class LibraryBooksApiClient
             Encoding.UTF8,
             "application/json");
 
-        var response = await _httpClient.PostAsync("http://localhost:5295/api/library/updateBook", content);
+        var response = await _httpClient.PostAsync("api/library/updateBook", content);
         response.EnsureSuccessStatusCode();
         var responseJson = await response.Content.ReadAsStringAsync();
 

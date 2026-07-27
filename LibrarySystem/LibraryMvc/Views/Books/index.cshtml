@@ -60,7 +60,7 @@
                 }
 
                 <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this book ?');">
-                    <input type="hidden" name="borrowBookId" value="@book.Id" />
+                    <input type="hidden" name="bookId" value="@book.Id" />
                     <button type="submit" class="bg-red-500 text-white
                     px-4 py-2 rounded-lg
                     hover:bg-red-600"> Delete</button>

@@ -22,7 +22,7 @@ public class LibraryAuthorsApiClient
     public async Task<List<AuthorsResponse>> GetAuthorsAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/authorsBooksCount");
+            "api/library/authorsBooksCount");
 
         response.EnsureSuccessStatusCode();
 
@@ -38,7 +38,7 @@ public class LibraryAuthorsApiClient
      public async Task<int> GetAuthorsCountAsync()
     {
         var response = await _httpClient.GetAsync(
-            "http://localhost:5295/api/library/authorsCount");
+            "api/library/authorsCount");
 
         response.EnsureSuccessStatusCode();
 

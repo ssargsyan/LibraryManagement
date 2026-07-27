@@ -1,0 +1,173 @@
+diff --git a/LibrarySystem/LibraryAPI/Controllers/LibraryController.cs b/LibrarySystem/LibraryAPI/Controllers/LibraryController.cs
+index 0424d0d..8beee1f 100644
+--- a/LibrarySystem/LibraryAPI/Controllers/LibraryController.cs
++++ b/LibrarySystem/LibraryAPI/Controllers/LibraryController.cs
+@@ -87,7 +87,7 @@ public class LibraryController : ControllerBase
+     {
+         int bookId = request.Id;
+         _libraryBooksService.Borrow(bookId);
+-        return Ok("Book is borrowd successfully");
++        return Ok("Book is borrowed successfully");
+     }
+ 
+     [HttpPost("returnBook")]
+diff --git a/LibrarySystem/LibraryMvc/Program.cs b/LibrarySystem/LibraryMvc/Program.cs
+index f5554aa..d7563c3 100644
+--- a/LibrarySystem/LibraryMvc/Program.cs
++++ b/LibrarySystem/LibraryMvc/Program.cs
+@@ -3,9 +3,14 @@ using LibraryMvc.Services;
+ var builder = WebApplication.CreateBuilder(args);
+ 
+ // Add services to the container.
+-builder.Services.AddControllersWithViews();
+-builder.Services.AddHttpClient<LibraryBooksApiClient>();
+-builder.Services.AddHttpClient<LibraryAuthorsApiClient>();
++builder.Services.AddHttpClient<LibraryBooksApiClient>(client =>
++{
++    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5295");
++});
++builder.Services.AddHttpClient<LibraryAuthorsApiClient>(client =>
++{
++    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5295");
++});
+ builder.Services.AddControllersWithViews();
+ 
+ var app = builder.Build();
+diff --git a/LibrarySystem/LibraryMvc/Services/LibraryAuthorsApiClient.cs b/LibrarySystem/LibraryMvc/Services/LibraryAuthorsApiClient.cs
+index 85282ac..ff12167 100644
+--- a/LibrarySystem/LibraryMvc/Services/LibraryAuthorsApiClient.cs
++++ b/LibrarySystem/LibraryMvc/Services/LibraryAuthorsApiClient.cs
+@@ -22,7 +22,7 @@ public class LibraryAuthorsApiClient
+     public async Task<List<AuthorsResponse>> GetAuthorsAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/authorsBooksCount");
++            "api/library/authorsBooksCount");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -38,7 +38,7 @@ public class LibraryAuthorsApiClient
+      public async Task<int> GetAuthorsCountAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/authorsCount");
++            "api/library/authorsCount");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+diff --git a/LibrarySystem/LibraryMvc/Services/LibraryBooksApiClient.cs b/LibrarySystem/LibraryMvc/Services/LibraryBooksApiClient.cs
+index bfaa902..d1b5ac3 100644
+--- a/LibrarySystem/LibraryMvc/Services/LibraryBooksApiClient.cs
++++ b/LibrarySystem/LibraryMvc/Services/LibraryBooksApiClient.cs
+@@ -22,7 +22,7 @@ public class LibraryBooksApiClient
+     public async Task<List<BookResponse>> GetBooksAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/books");
++            "api/library/books");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -38,7 +38,7 @@ public class LibraryBooksApiClient
+     public async Task<int> GetBooksCountAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/booksCount");
++            "api/library/booksCount");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -50,7 +50,7 @@ public class LibraryBooksApiClient
+     public async Task<int> GetBorrowedBooksCountAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/booksCount?isBorrowed=true");
++            "api/library/booksCount?isBorrowed=true");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -62,7 +62,7 @@ public class LibraryBooksApiClient
+     public async Task<int> GetAvailableBooksCountAsync()
+     {
+         var response = await _httpClient.GetAsync(
+-            "http://localhost:5295/api/library/booksCount?isBorrowed=false");
++            "api/library/booksCount?isBorrowed=false");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -74,7 +74,7 @@ public class LibraryBooksApiClient
+     public async Task<BookResponse> GetBookAsync(int bookId)
+     {
+         var response = await _httpClient.GetAsync(
+-            $"http://localhost:5295/api/library/books/{bookId}");
++            $"api/library/books/{bookId}");
+ 
+         response.EnsureSuccessStatusCode();
+ 
+@@ -93,7 +93,7 @@ public class LibraryBooksApiClient
+     {
+ 
+         var response = await _httpClient.DeleteAsync(
+-            $"http://localhost:5295/api/library/{bookId}");
++            $"api/library/books/{bookId}");
+ 
+         response.EnsureSuccessStatusCode();
+     }
+@@ -114,13 +114,11 @@ public class LibraryBooksApiClient
+         var requestUrl = "";
+         if (isBorrowed)
+         {
+-            Console.WriteLine("borrow book ============================");
+-            requestUrl = "http://localhost:5295/api/library/borrowBook";
++            requestUrl = "api/library/borrowBook";
+         }
+         else
+         {
+-            Console.WriteLine("return book ============================");
+-            requestUrl = "http://localhost:5295/api/library/returnBook";
++            requestUrl = "api/library/returnBook";
+         }
+         var response = await _httpClient.PostAsync(requestUrl, content);
+         response.EnsureSuccessStatusCode();
+@@ -136,7 +134,7 @@ public class LibraryBooksApiClient
+             Encoding.UTF8,
+             "application/json");
+ 
+-        var response = await _httpClient.PostAsync("http://localhost:5295/api/library/addBook", content);
++        var response = await _httpClient.PostAsync("api/library/addBook", content);
+         response.EnsureSuccessStatusCode();
+         var responseJson = await response.Content.ReadAsStringAsync();
+ 
+@@ -159,7 +157,7 @@ public class LibraryBooksApiClient
+             Encoding.UTF8,
+             "application/json");
+ 
+-        var response = await _httpClient.PostAsync("http://localhost:5295/api/library/updateBook", content);
++        var response = await _httpClient.PostAsync("api/library/updateBook", content);
+         response.EnsureSuccessStatusCode();
+         var responseJson = await response.Content.ReadAsStringAsync();
+ 
+diff --git a/LibrarySystem/LibraryMvc/appsettings.Development.json b/LibrarySystem/LibraryMvc/appsettings.Development.json
+index 0c208ae..8078a77 100644
+--- a/LibrarySystem/LibraryMvc/appsettings.Development.json
++++ b/LibrarySystem/LibraryMvc/appsettings.Development.json
+@@ -4,5 +4,6 @@
+       "Default": "Information",
+       "Microsoft.AspNetCore": "Warning"
+     }
+-  }
++  },
++  "ApiBaseUrl": "http://localhost:5295/"
+ }
+diff --git a/LibrarySystem/LibraryMvc/appsettings.json b/LibrarySystem/LibraryMvc/appsettings.json
+index 10f68b8..69c01b1 100644
+--- a/LibrarySystem/LibraryMvc/appsettings.json
++++ b/LibrarySystem/LibraryMvc/appsettings.json
+@@ -5,5 +5,6 @@
+       "Microsoft.AspNetCore": "Warning"
+     }
+   },
+-  "AllowedHosts": "*"
++  "AllowedHosts": "*",
++  "ApiBaseUrl": "http://localhost:5295/"
+ }

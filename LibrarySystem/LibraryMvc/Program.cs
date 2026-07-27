@@ -3,9 +3,14 @@ using LibraryMvc.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient<LibraryBooksApiClient>();
-builder.Services.AddHttpClient<LibraryAuthorsApiClient>();
+builder.Services.AddHttpClient<LibraryBooksApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5295");
+});
+builder.Services.AddHttpClient<LibraryAuthorsApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5295");
+});
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
