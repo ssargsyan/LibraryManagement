@@ -1,8 +1,6 @@
 using LibraryAPI.Data;
 using LibraryAPI.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-
+using LibraryAPI.Exceptions;
 namespace LibraryAPI.Services;
 
 public class LibraryBooksService : ILibraryBooksService
@@ -13,11 +11,15 @@ public class LibraryBooksService : ILibraryBooksService
     private readonly IBookRepository _bookRepository;
 
     private readonly IAuthorRepository _authorRepository;
+
+    private readonly LibraryDbContext _dbContext;
+
     public LibraryBooksService(
-        IBookRepository bookRepository, IAuthorRepository authorRepository)
+        IBookRepository bookRepository, IAuthorRepository authorRepository, LibraryDbContext dbContext)
     {
         _bookRepository = bookRepository;
         _authorRepository = authorRepository;
+        _dbContext = dbContext;
     }
     private int _nextId = 1;
 
@@ -49,7 +51,8 @@ public class LibraryBooksService : ILibraryBooksService
     public BookResponse GetBookResponseById(int bookId)
     {
         // var book = _books.FirstOrDefault(book => book.Id == bookId) ?? throw new InvalidOperationException("Book not found");
-        var book = _bookRepository.GetById(bookId) ?? throw new InvalidOperationException("Book not found");
+        var book = _bookRepository.GetById(bookId) ?? throw new NotFoundException(
+            $"Book {bookId} not found");
         return _bookMapper.ToResponseBook(book);
 
         //after implementing Projection
@@ -60,7 +63,7 @@ public class LibraryBooksService : ILibraryBooksService
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(author))
         {
-            throw new InvalidOperationException("Added book ust have title and author");
+            throw new ValidationException("Added book must have title and author");
         }
         // var book = new Book(_nextId++, title, author);
 
@@ -68,25 +71,17 @@ public class LibraryBooksService : ILibraryBooksService
         // return _bookMapper.ToResponseBook(book);
 
         // using db context
-        // need to combine into 1 transaction
 
         var foundAuthor = _authorRepository.GetAuthorByName(author) ?? null;
-        var authorId = 0;
         if (foundAuthor == null)
         {
-
             var addedAuthor = _authorRepository.Add(new Author(author));
-            _authorRepository.Save();
-            authorId = addedAuthor.Id;
-        }
-        else
-        {
-            authorId = foundAuthor.Id;
+            foundAuthor = addedAuthor;
         }
 
-        var book = new BookEntity(title, authorId);
+        var book = new BookEntity(title, foundAuthor);
         _bookRepository.Add(book);
-        _bookRepository.Save();
+        _dbContext.SaveChanges();
         return _bookMapper.ToResponseBook(book);
     }
 
@@ -94,12 +89,12 @@ public class LibraryBooksService : ILibraryBooksService
     {
         if (bookId <= 0)
         {
-            throw new InvalidOperationException("Book Id can't be negative");
+            throw new ValidationException("Book Id can't be negative");
         }
-        var book = _bookRepository.GetById(bookId) ?? throw new InvalidOperationException("Book not found");
+        var book = _bookRepository.GetById(bookId) ?? throw new NotFoundException($"Book {bookId} not found");
         //  _books.Remove(book);
         _bookRepository.Remove(book);
-        _bookRepository.Save();
+        _dbContext.SaveChanges();
         return _bookMapper.ToResponseBook(book);
     }
 
@@ -107,23 +102,23 @@ public class LibraryBooksService : ILibraryBooksService
     {
         if (bookId <= 0)
         {
-            throw new InvalidOperationException("Book Id can't be negative");
+            throw new ValidationException("Book Id can't be negative");
         }
-        var book = _bookRepository.GetById(bookId) ?? throw new InvalidOperationException("Book not found");
+        var book = _bookRepository.GetById(bookId) ?? throw new NotFoundException($"Book {bookId} not found");
         Console.WriteLine($"================Borrow {book.Title}===========");
         _bookRepository.Borrow(book);
-        _bookRepository.Save();
+        _dbContext.SaveChanges();
     }
 
     public void Return(int bookId)
     {
         if (bookId <= 0)
         {
-            throw new InvalidOperationException("Book Id can't be negative");
+            throw new ValidationException("Book Id can't be negative");
         }
-        var book = _bookRepository.GetById(bookId) ?? throw new InvalidOperationException("Book not found");
+        var book = _bookRepository.GetById(bookId) ?? throw new NotFoundException($"Book {bookId} not found");
         _bookRepository.Return(book);
-        _bookRepository.Save();
+        _dbContext.SaveChanges();
     }
 
 
@@ -144,24 +139,18 @@ public class LibraryBooksService : ILibraryBooksService
         var id = request.Id;
         var titile = request.Title;
         var authorName = request.Author;
-        var book = _bookRepository.GetById(id) ?? throw new InvalidOperationException("Book not found");
+        var book = _bookRepository.GetById(id) ?? throw new NotFoundException($"Book {id} not found");
 
         Console.WriteLine($"{authorName} ========= ");
-        var author = _authorRepository.GetAuthorByName(authorName) ?? null;
-        var authorId = 0;
+        var author = _authorRepository.GetAuthorByName(authorName);
         if (author == null)
         {
-
             var createdAuthor = _authorRepository.Add(new Author(authorName));
-            _authorRepository.Save();
-            authorId = createdAuthor.Id;
+            author = createdAuthor;
         }
-        else
-        {
-            authorId = author.Id;
-        }
-        _bookRepository.Update(book, titile, authorId);
-        _bookRepository.Save();
+
+        _bookRepository.Update(book, titile, author);
+        _dbContext.SaveChanges();
         return _bookMapper.ToResponseBook(book);
 
     }

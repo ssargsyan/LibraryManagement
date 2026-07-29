@@ -22,11 +22,11 @@ public class BookEntity
     //     IsBorrowed = false;
     // }
 
-      public BookEntity(string title, int authorId)
+      public BookEntity(string title, Author author)
     {
 
         Title = title;
-        AuthorId=authorId;
+        Author=author;
         IsBorrowed = false;
     }
 
@@ -40,10 +40,10 @@ public class BookEntity
 
         IsBorrowed = false;
     }
-    public void Update(string title, int authorId)
+    public void Update(string title, Author author)
     {
         Title = title;
-        AuthorId = authorId;
+        Author = author;
     }
 
 }

@@ -16,6 +16,4 @@ public interface IAuthorRepository
 
     public List<AuthorBooksCountResponse> GetAuthorsWithBooksCount(string? search, int? authorId, string? sortBy, int? page, int? pageSize);
 
-    public void Save();
-
 }

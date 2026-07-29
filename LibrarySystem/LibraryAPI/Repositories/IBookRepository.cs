@@ -17,8 +17,6 @@ public interface IBookRepository
 
     public void Return(BookEntity book);
 
-    public BookEntity Update(BookEntity book, string title, int authorId);
-
-    public void Save();
+    public BookEntity Update(BookEntity book, string title, Author author);
 
 }

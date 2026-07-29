@@ -62,18 +62,26 @@ public class LibraryController : ControllerBase
     }
 
     [HttpPost("addBook")]
-    public IActionResult AddBook(CreateBookRequest request)
+    public CreatedAtActionResult AddBook(CreateBookRequest request)
     {
         var title = request.Title;
         var author = request.Author;
-        return Ok(_libraryBooksService.AddBook(title, author));
+        var book = _libraryBooksService.AddBook(title, author);
+        return CreatedAtAction(
+            nameof(GetBookById),
+            new { bookId = book.Id },
+            book);
     }
 
     [HttpPost("updateBook")]
-    public IActionResult UpdateBook(UpdateBookRequest request)
+    public CreatedAtActionResult UpdateBook(UpdateBookRequest request)
     {
         Console.WriteLine("request " + request.Author + " " + request.Title);
-        return Ok(_libraryBooksService.UpdateBook(request));
+        var book = _libraryBooksService.UpdateBook(request);
+        return CreatedAtAction(
+            nameof(GetBookById),
+            new { bookId = book.Id },
+            book);
     }
 
     [HttpDelete("books/{bookId}")]

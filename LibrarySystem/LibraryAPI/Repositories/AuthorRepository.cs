@@ -79,9 +79,4 @@ public class AuthorRepository : IAuthorRepository
     }).ToList();
     }
 
-    public void Save()
-    {
-        _context.SaveChanges();
-    }
-
 }

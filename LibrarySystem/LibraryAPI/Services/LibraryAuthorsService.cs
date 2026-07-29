@@ -1,7 +1,6 @@
 using LibraryAPI.Data;
 using LibraryAPI.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using LibraryAPI.Exceptions;
 
 namespace LibraryAPI.Services;
 
@@ -13,11 +12,15 @@ public class LibraryAuthorsService : ILibraryAuthorsService
     private readonly IBookRepository _bookRepository;
 
     private readonly IAuthorRepository _authorRepository;
+
+    private readonly LibraryDbContext _dbContext;
+
     public LibraryAuthorsService(
-        IBookRepository bookRepository, IAuthorRepository authorRepository)
+        IBookRepository bookRepository, IAuthorRepository authorRepository, LibraryDbContext dbContext)
     {
         _bookRepository = bookRepository;
         _authorRepository = authorRepository;
+        _dbContext = dbContext;
     }
 
     public IEnumerable<Author> GetAllAuthors()
@@ -40,12 +43,12 @@ public class LibraryAuthorsService : ILibraryAuthorsService
     {
         if (authorId <= 0)
         {
-            throw new InvalidOperationException("Author Id can't be negative");
+            throw new ValidationException("Author Id can't be negative");
         }
-        var author = _authorRepository.GetById(authorId) ?? throw new InvalidOperationException("Author not found");
+        var author = _authorRepository.GetById(authorId) ?? throw new NotFoundException("Author not found");
 
         _authorRepository.Remove(author);
-        _authorRepository.Save();
+        _dbContext.SaveChanges();
     }
 
 }

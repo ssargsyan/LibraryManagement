@@ -18,10 +18,8 @@ builder.Services.AddScoped<ILibraryBooksService, LibraryBooksService>();
 builder.Services.AddScoped<ILibraryAuthorsService, LibraryAuthorsService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-builder.Services.AddDbContext<LibraryDbContext>(
-    options =>
-        options.UseSqlite(
-            "Data Source=library.db"));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<LibraryDbContext>(options => options.UseSqlite(connectionString));
 
 var app = builder.Build();
 
@@ -33,6 +31,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 app.Run();

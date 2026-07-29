@@ -41,7 +41,7 @@ public class BookRepository : IBookRepository
             "id" => query.OrderBy(b => b.Id),
             _ => query.OrderBy(b => b.Id)
         };
-        if (page.HasValue && pageSize.HasValue)
+        if (page.HasValue && pageSize.HasValue && page >= 1)
         {
             query = query.Skip(Convert.ToInt32((page - 1) * pageSize)).Take(Convert.ToInt32(pageSize));
         }
@@ -71,7 +71,9 @@ public class BookRepository : IBookRepository
         }
         if (!string.IsNullOrWhiteSpace(IsBorrowed))
         {
-            query = query.Where(book => book.IsBorrowed == bool.Parse(IsBorrowed));
+            bool isBorrowed;
+            bool.TryParse(IsBorrowed, out isBorrowed);
+            query = query.Where(book => book.IsBorrowed == isBorrowed);
         }
         query = sortBy?.ToLower() switch
         {
@@ -113,15 +115,10 @@ public class BookRepository : IBookRepository
         book.Return();
     }
 
-    public BookEntity Update(BookEntity book, string title, int authorId)
+    public BookEntity Update(BookEntity book, string title, Author author)
     {
-        book.Update(title, authorId);
+        book.Update(title, author);
         return book;
     }
 
-
-    public void Save()
-    {
-        _context.SaveChanges();
-    }
 }
